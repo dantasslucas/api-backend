@@ -1,0 +1,128 @@
+package com.spring.backend.api.controllers;
+
+import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.util.Optional;
+
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.spring.backend.api.dtos.TodoDto;
+import com.spring.backend.api.model.Todo;
+import com.spring.backend.api.response.Response;
+import com.spring.backend.api.services.TodoService;
+
+@RestController
+@RequestMapping("/api/backend")
+public class TodoController {
+		
+	private static final Logger log = LoggerFactory.getLogger(TodoController.class);
+	
+	@Autowired
+	private TodoService todoService;
+	
+	public TodoController() {}
+	
+	/**
+	 * Retorna uma tarefa dado id
+	 * 
+	 * @param description
+	 * @return ResponseEntity<Response<TodoDto>>
+	 */
+	@GetMapping(value="/{id}")
+	public ResponseEntity<Response<TodoDto>> buscarPorId(@PathVariable("id") Long id){
+		log.info("Buscando tarefa por id {}", id);
+		Response<TodoDto> response = new Response<TodoDto>();
+		Optional<Todo> todo = todoService.buscarPorId(id);
+		if(!todo.isPresent()) {
+			log.info("Tarefa não encontrada");
+			response.getErrors().add("Empresa não encontrada");
+			return ResponseEntity.badRequest().body(response);
+		}
+		response.setData(this.converterTodoDto(todo.get()));
+		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * 
+	 * Adcionando nova tarefa
+	 * 
+	 * @param todoDto
+	 * @param result
+	 * @return
+	 * @throws ParseException
+	 */
+	@PostMapping()
+	public ResponseEntity<Response<TodoDto>> adicionar(@Valid @RequestBody TodoDto todoDto,
+			BindingResult result) throws NoSuchAlgorithmException{
+		log.info("Adcionando tarefa");
+		Response<TodoDto> response = new Response<TodoDto>();
+		Todo todo = this.converterTodoDtoParaTodo(todoDto,result);
+		this.todoService.persistir(todo);
+		response.setData(this.converterTodoDto(todo));
+		return ResponseEntity.ok(response);
+	}
+	/**
+	 * 
+	 * @param id
+	 * @param todoDto
+	 * @param result
+	 * @return
+	 * @throws ParseException
+	 */
+	@PutMapping(value="/{id}")
+	public ResponseEntity<Response<TodoDto>> autalizar(@PathVariable("id") Long id,
+			@Valid @RequestBody TodoDto todoDto, BindingResult result ) throws ParseException{
+		log.info("Atualiza Descrição pelo id {}", todoDto.toString());
+		Response<TodoDto> response = new Response<TodoDto>();
+		todoDto.setId(id);
+		Todo todo = this.converterTodoDtoParaTodo(todoDto, result);
+		if(result.hasErrors()) {
+			log.error("Erro validando tarefa: {}",result.getAllErrors());
+			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+		}
+		this.todoService.remover(id);
+		todo = this.todoService.persistir(todo);
+		response.setData(this.converterTodoDto(todo));
+		return ResponseEntity.ok(response);
+	}
+	/**
+	 * Popula modelo com dados da Dto
+	 * 
+	 * @param todoDto
+	 * @param result
+	 * @return
+	 */
+	private Todo converterTodoDtoParaTodo(TodoDto todoDto, BindingResult result) {
+		// TODO Auto-generated method stub
+		Todo todo = new Todo();
+		todo.setDescription(todoDto.getDescription());
+		return todo;
+	}
+
+	/**
+	 * Pupula um DTO com os dados do Todo
+	 * @param todo
+	 * @return
+	 */
+	private TodoDto converterTodoDto(Todo todo) {
+		// TODO Auto-generated method stub
+		TodoDto todoDto = new TodoDto();
+		todoDto.setId(todo.getId());
+		todoDto.setDescription(todo.getDescription());
+		return todoDto;
+	}
+
+}
