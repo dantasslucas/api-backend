@@ -1,5 +1,6 @@
 package com.spring.backend.api.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.spring.backend.api.model.Todo;
@@ -27,7 +28,7 @@ public interface TodoService {
 	 */
 	Todo persistir (Todo todo);
 	
-
+	public List<Todo> buscarLista();
 	
 	void remover(Long id);
 	

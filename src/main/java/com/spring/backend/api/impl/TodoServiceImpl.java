@@ -1,10 +1,14 @@
 package com.spring.backend.api.impl;
 
+import java.util.List;
 import java.util.Optional;
+
+import javax.persistence.criteria.Order;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.spring.backend.api.model.Todo;
@@ -37,6 +41,10 @@ public class TodoServiceImpl implements TodoService{
 	public Optional<Todo> buscarPorId(Long id) {
 		// TODO Auto-generated method stub
 		return Optional.ofNullable(tr.findOne(id));
+	}
+	
+	public List<Todo> buscarLista(){
+		return tr.findAll(new Sort(new Sort.Order(Sort.Direction.ASC,"id")));
 	}
 
 	@Override

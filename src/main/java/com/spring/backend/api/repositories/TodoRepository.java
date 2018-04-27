@@ -10,6 +10,6 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
 	
 	@Transactional(readOnly=true)
 	Todo findByDescription(String description);
-	@Transactional(readOnly=true)
-	Todo findAll(Todo todo);
+
+	
 }
