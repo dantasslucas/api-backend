@@ -12,8 +12,15 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.NamedQueries;
+import org.hibernate.annotations.NamedQuery;
+
 @Entity
 @Table(name="todo")
+@NamedQueries({
+	@NamedQuery(name = "Todo.findByDescription",
+			query = "SELECT t FROM Todo t WHERE t.description like :description")
+})
 public class Todo implements Serializable {
 	
 	private static final long serialVersionUID = 846218413L;

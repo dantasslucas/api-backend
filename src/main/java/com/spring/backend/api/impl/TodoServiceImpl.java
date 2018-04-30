@@ -3,8 +3,6 @@ package com.spring.backend.api.impl;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.criteria.Order;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +21,7 @@ public class TodoServiceImpl implements TodoService{
 
 	@Autowired
 	private TodoRepository tr;
-	@Override
-	public Optional<Todo> buscarPorDescicao(String descricao) {
-		// TODO Auto-generated method stub
-		log.info("Buscando tarefa por descrição {}",descricao);
-		return Optional.ofNullable(tr.findByDescription(descricao));
-	}
+	
 
 	@Override
 	public Todo persistir(Todo todo) {
@@ -51,6 +44,12 @@ public class TodoServiceImpl implements TodoService{
 	public void remover(Long id) {
 		// TODO Auto-generated method stub
 		this.tr.delete(id);
+	}
+
+	@Override
+	public List<Todo> buscarPorDescicao(String descricao) {
+		// TODO Auto-generated method stub
+		return tr.findByDescription("%"+descricao+"%");
 	}
 
 	

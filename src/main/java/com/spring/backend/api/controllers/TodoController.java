@@ -65,18 +65,19 @@ public class TodoController {
 	 * @param description
 	 * @return ResponseEntity<Response<TodoDto>>
 	 */
-	@GetMapping(value="/{id}")
-	public ResponseEntity<Response<TodoDto>> buscarPorId(@PathVariable("id") Long id){
-		log.info("Buscando tarefa por id {}", id);
-		Response<TodoDto> response = new Response<TodoDto>();
-		Optional<Todo> todo = todoService.buscarPorId(id);
-		if(!todo.isPresent()) {
-			log.info("Tarefa não encontrada");
-			response.getErrors().add("Empresa não encontrada");
-			return ResponseEntity.badRequest().body(response);
+	@GetMapping(value="/{description}")
+	public ResponseEntity<Response<List<TodoDto>>> buscarPorDescricao(
+			@PathVariable("description") String description){
+		log.info("Buscando tarefa por Descricao {}", description);
+		Response<List<TodoDto>> response = new Response<List<TodoDto>>();
+		List<Todo> lista = todoService.buscarPorDescicao(description);
+		List<TodoDto> retorno = new ArrayList<>();
+		for (Todo todo : lista) {
+			retorno.add(this.converterTodoDto(todo));
 		}
-		response.setData(this.converterTodoDto(todo.get()));
+		response.setData(retorno);
 		return ResponseEntity.ok(response);
+		
 	}
 
 	/**

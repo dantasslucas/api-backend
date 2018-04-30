@@ -11,9 +11,9 @@ public interface TodoService {
 	 * Retorna uma tarefa dado uma Descricao.
 	 * 
 	 * @param description
-	 * @return Optional<Todo>
+	 * @return List<Todo>
 	 */
-	Optional<Todo> buscarPorDescicao(String descricao);
+	public List<Todo> buscarPorDescicao(String descricao);
 	/**
 	 * Retorna uma tarefa por Id
 	 * @param id
